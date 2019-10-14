@@ -17,8 +17,8 @@ local true = "true"
 local false = "false"
 local null = "null"
 
-local key = word.any / string
-local primitive_value = string / number / true / false / null
+key = word.any / string
+primitive_value = string / number / true / false / null
 
 --- null_first ---
 member = key ":" primitive_value ","?
