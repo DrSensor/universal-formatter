@@ -5,41 +5,45 @@ An **experimental** code/text formatter that utilize [Rosie Pattern Language](ht
 > still just an idea
 
 ### Usage
-Given this _json5.rpl_
+Given this _json5.rpl_ and _json5.yml_
 ```dhall
-package json_fmt
+package json5
 
 import word, num
 
-local string = word.q
-local number = num.signed_number
 local true = "true"
 local false = "false"
 local null = "null"
 
+string = word.q
+number = num.signed_number
+
 key = word.any / string
 primitive_value = string / number / true / false / null
-
---- null_first ---
 member = key ":" primitive_value ","?
-$_scope = "{" member+ "}"
-$_place_at_start = "{"
-
-$1_place = key ":" null ","?
-$1_before = key ":" (string / number / true / false) ","?
-$2_place_before_end = $1_before
-
-$_place_at_end = "}"
-------------------
-
---- no_comma ---
-$_scope = key ":" primitive ","
-$_remove = ","
-----------------
+member_non_null = key ":" (string / number / true / false) ","?
+```
+```yml
+version: '1'
+grammar: [json5.rpl]
+rules:
+  no_comma:
+    scope: json5.key ":" json5.primitive ","
+    remove: ","
+  null_first:
+    scope: "{" json5.memeber "}"
+    match_and_place:
+      at_start: "{"
+      at_end: "}"
+    patterns:
+    - place: json5.key ":" json5.null ","?
+      before: json5.member_non_null
+    - match_and_place:
+        before_end: json5.member_non_null
 ```
 then execute
 ```console
-$ echo '{"a":123,"b":null}' | ufmt --grammar json5.rpl --enable null_first,no_comma
+$ echo '{"a":123,"b":null}' | ufmt --grammar json5.yml --enable null_first,no_comma
 {
   "b": null
   "a": 123
