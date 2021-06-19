@@ -49,3 +49,7 @@ $ echo '{"a":123,"b":null}' | ufmt --grammar json5.yml --enable null_first,no_co
   "a": 123
 }
 ```
+
+## Inspiration
+- https://github.com/trishume/syntect
+- https://github.com/ul/kak-tree
